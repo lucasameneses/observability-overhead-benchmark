@@ -1,0 +1,9 @@
+package ufc.mdcc.ads.trab1.tsorderservice.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ufc.mdcc.ads.trab1.tsorderservice.model.Order;
+
+@Repository
+public interface OrderRepository extends JpaRepository<Order, String> {
+}

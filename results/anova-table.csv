@@ -1,0 +1,4 @@
+metric,test,statistic,p_value,significant,groups
+p50,Kruskal-Wallis,99.78209944751381,2.1507622670371534e-22,True,"['high', 'low', 'medium']"
+p95,Kruskal-Wallis,1.7331982811540456,0.42037877008480096,False,"['high', 'low', 'medium']"
+p99,Kruskal-Wallis,0.19183548189073463,0.9085387485335046,False,"['high', 'low', 'medium']"

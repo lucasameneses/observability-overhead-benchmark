@@ -1,0 +1,35 @@
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Raw experiment output: about 0.1 to 1 GB of k6 JSON per run, kept out of git.
+# The aggregated CSVs and figures in results/ are versioned.
+results/*.json
+results/dockerstats_*.csv
+results/mpstat_*.csv
+results/dockerstats-summary.csv
+results/mpstat-summary.csv
+*.log
+
+# Agent working notes (local only)
+.agents/

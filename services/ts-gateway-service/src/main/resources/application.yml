@@ -1,0 +1,39 @@
+server:
+  port: 18888
+
+spring:
+  application:
+    name: ts-gateway-service
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: order-service
+            uri: ${ORDER_SERVICE_URL:http://localhost:12031}
+            predicates:
+              - Path=/api/v1/orderservice/**
+          - id: payment-service
+            uri: ${PAYMENT_SERVICE_URL:http://localhost:19001}
+            predicates:
+              - Path=/api/v1/paymentservice/**
+          - id: travel-service
+            uri: ${TRAVEL_SERVICE_URL:http://localhost:12346}
+            predicates:
+              - Path=/api/v1/travelservice/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ts-gateway-service
+      service: ts-gateway-service

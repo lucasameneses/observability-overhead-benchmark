@@ -1,0 +1,116 @@
+services:
+  ts-gateway-service:
+    build:
+      context: ./services/ts-gateway-service
+      dockerfile: Dockerfile
+    container_name: ts-gateway-service
+    ports:
+      - "18888:18888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - ORDER_SERVICE_URL=http://ts-order-service:12031
+      - PAYMENT_SERVICE_URL=http://ts-payment-service:19001
+      - TRAVEL_SERVICE_URL=http://ts-travel-service:12346
+    depends_on:
+      ts-order-service:
+        condition: service_started
+      ts-payment-service:
+        condition: service_started
+      ts-travel-service:
+        condition: service_started
+    networks:
+      - train-ticket-net
+
+  ts-order-service:
+    build:
+      context: ./services/ts-order-service
+      dockerfile: Dockerfile
+    container_name: ts-order-service
+    ports:
+      - "12031:12031"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tsorder
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - PAYMENT_SERVICE_URL=http://ts-payment-service:19001
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - train-ticket-net
+
+  ts-payment-service:
+    build:
+      context: ./services/ts-payment-service
+      dockerfile: Dockerfile
+    container_name: ts-payment-service
+    ports:
+      - "19001:19001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tspayment
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - TRAVEL_SERVICE_URL=http://ts-travel-service:12346
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - train-ticket-net
+
+  ts-travel-service:
+    build:
+      context: ./services/ts-travel-service
+      dockerfile: Dockerfile
+    container_name: ts-travel-service
+    ports:
+      - "12346:12346"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tstravel
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - train-ticket-net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - train-ticket-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - train-ticket-net
+
+networks:
+  train-ticket-net:
+    driver: bridge
+
+volumes:
+  postgres-data:

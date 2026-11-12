@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'ts-gateway-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ts-gateway-service:18888']
+
+  - job_name: 'ts-order-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ts-order-service:12031']
+
+  - job_name: 'ts-payment-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ts-payment-service:19001']
+
+  - job_name: 'ts-travel-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ts-travel-service:12346']
